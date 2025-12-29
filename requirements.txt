@@ -1,0 +1,10 @@
+flask
+flask_sqlalchemy
+authlib
+pyjwt
+requests
+gunicorn
+python-dotenv
+flasgger
+
+
