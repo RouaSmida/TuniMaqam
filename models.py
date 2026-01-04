@@ -1,7 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from extensions import db
+
+
+
 class Maqam(db.Model):
     __tablename__ = "maqam"
+    # Relationship to audios (one-to-many)
+    audios = db.relationship('MaqamAudio', backref='maqam', lazy=True)
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -47,10 +52,9 @@ class Maqam(db.Model):
     rarity_level = db.Column(db.String(20), nullable=True)
     rarity_level_ar = db.Column(db.String(20), nullable=True)
 
-    # NEW: audio URL
-    audio_url = db.Column(db.String(512), nullable=True)
+    # No more audio_url field; audios relationship is defined in MaqamAudio
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     def to_dict_basic(self):
         import json
@@ -107,8 +111,9 @@ class Maqam(db.Model):
                 "en": _loads(self.seasonal_usage_json) or [],
                 "ar": _loads(self.seasonal_usage_ar_json) or [],
             },
-            "audio_url": self.audio_url,  # include in full dict
+            "audio_urls": [audio.url for audio in self.audios],
         }
+
 
 class MaqamContribution(db.Model):
     __tablename__ = "maqam_contribution"
@@ -124,7 +129,32 @@ class MaqamContribution(db.Model):
     contributor_id = db.Column(db.String(100), nullable=True)
     contributor_score = db.Column(db.Integer, nullable=True, default=0)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     reviewed_at = db.Column(db.DateTime, nullable=True)
 
     maqam = db.relationship("Maqam", backref="contributions", lazy=True)
+
+
+class UserStat(db.Model):
+    __tablename__ = "user_stat"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    best_score = db.Column(db.Float, default=0.0)
+    quizzes = db.Column(db.Integer, default=0)
+    activities = db.Column(db.Integer, default=0)
+    level = db.Column(db.String(20), default="beginner")
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+
+class ActivityLog(db.Model):
+    __tablename__ = "activity_log"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(255), nullable=False, index=True)
+    maqam_id = db.Column(db.Integer, db.ForeignKey("maqam.id"), nullable=False)
+    activity = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    maqam = db.relationship("Maqam", backref="activity_logs", lazy=True)

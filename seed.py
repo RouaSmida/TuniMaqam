@@ -1,6 +1,6 @@
 from extensions import db
 from app import create_app
-from models import Maqam
+from models import Maqam, MaqamAudio
 import json
 
 app = create_app()
@@ -47,10 +47,10 @@ with app.app_context():
         difficulty_label="intermediate",
         difficulty_label_ar="متوسط",
         emotion_weights_json=json.dumps({"cheerful": 1.0}),
-        historical_periods_json=json.dumps([]),
-        historical_periods_ar_json=json.dumps([]),
-        seasonal_usage_json=json.dumps([]),
-        seasonal_usage_ar_json=json.dumps([]),
+        historical_periods_json=json.dumps(["1950s_radio", "modern_malouf"]),
+        historical_periods_ar_json=json.dumps(["إذاعة الخمسينيات", "مالوف حديث"]),
+        seasonal_usage_json=json.dumps(["no specific seasonal usage"]),
+        seasonal_usage_ar_json=json.dumps(["لا يوجد استخدام موسمي محدد"]),
         rarity_level="common",
         rarity_level_ar="شائع",
     )
@@ -91,10 +91,10 @@ with app.app_context():
         difficulty_label="intermediate",
         difficulty_label_ar="متوسط",
         emotion_weights_json=json.dumps({"romantic": 1.0}),
-        historical_periods_json=json.dumps([]),
-        historical_periods_ar_json=json.dumps([]),
-        seasonal_usage_json=json.dumps([]),
-        seasonal_usage_ar_json=json.dumps([]),
+        historical_periods_json=json.dumps(["1960s_radio"]),
+        historical_periods_ar_json=json.dumps(["إذاعة الستينيات"]),
+        seasonal_usage_json=json.dumps(["no specific seasonal usage"]),
+        seasonal_usage_ar_json=json.dumps(["لا يوجد استخدام موسمي محدد"]),
         rarity_level="common",
         rarity_level_ar="شائع",
     )
@@ -135,10 +135,10 @@ with app.app_context():
         difficulty_label="beginner",
         difficulty_label_ar="مبتدئ",
         emotion_weights_json=json.dumps({"sad": 0.6, "emotional": 0.4}),
-        historical_periods_json=json.dumps([]),
-        historical_periods_ar_json=json.dumps([]),
-        seasonal_usage_json=json.dumps([]),
-        seasonal_usage_ar_json=json.dumps([]),
+        historical_periods_json=json.dumps(["traditional_malouf"]),
+        historical_periods_ar_json=json.dumps(["مالوف تقليدي"]),
+        seasonal_usage_json=json.dumps(["no specific seasonal usage"]),
+        seasonal_usage_ar_json=json.dumps(["لا يوجد استخدام موسمي محدد"]),
         rarity_level="common",
         rarity_level_ar="شائع",
     )
@@ -185,8 +185,8 @@ with app.app_context():
         }),                                       
         historical_periods_json=json.dumps(["1940s_radio"]),        
         historical_periods_ar_json=json.dumps(["إذاعة الأربعينيات"]),   
-        seasonal_usage_json=json.dumps(["weddings_summer"]),        
-        seasonal_usage_ar_json=json.dumps(["أعراس الصيف"]),          
+        seasonal_usage_json=json.dumps(["no specific seasonal usage"]),
+        seasonal_usage_ar_json=json.dumps(["لا يوجد استخدام موسمي محدد"]),
         rarity_level="common",                    
         rarity_level_ar="شائع",                  
     )
@@ -279,20 +279,24 @@ with app.app_context():
             "joyful": 0.8,
             "festive": 0.2
         }),                                    
-        historical_periods_json=json.dumps([]),
-        historical_periods_ar_json=json.dumps([]),
+        historical_periods_json=json.dumps(["folk_festivals"]),
+        historical_periods_ar_json=json.dumps(["مهرجانات شعبية"]),
         seasonal_usage_json=json.dumps(["weddings_spring_summer"]),    
         seasonal_usage_ar_json=json.dumps(["أعراس الربيع والصيف"]),    
         rarity_level="locally_rare",           
         rarity_level_ar="نادر محليًا",        
     )
 
-    maqam_AL_DHAIL.audio_url = "http://localhost:8000/static/audio/ALDHAIL.mp3"
-    maqam_AL_MAYA.audio_url = "http://localhost:8000/static/audio/AL_MAYA.mp3"
-    maqam_SIKA.audio_url = "http://localhost:8000/static/audio/SIKA.mp3"
-    maqam_AL_HSIN.audio_url = "http://localhost:8000/static/audio/AL_HSIN.mp3"
-    maqam_AL_IRAQ.audio_url = "http://localhost:8000/static/audio/AL_IRAQ.mp3"
-    maqam_AL_ARDHAWI.audio_url = "http://localhost:8000/static/audio/AL_ARDHAOUI.mp3"
+
+    # Add audio files using MaqamAudio (one-to-many)
+    audios = [
+        MaqamAudio(maqam=maqam_AL_DHAIL, url="http://localhost:8000/static/audio/ALDHAIL.mp3"),
+        MaqamAudio(maqam=maqam_AL_MAYA, url="http://localhost:8000/static/audio/AL_MAYA.mp3"),
+        MaqamAudio(maqam=maqam_SIKA, url="http://localhost:8000/static/audio/SIKA.mp3"),
+        MaqamAudio(maqam=maqam_AL_HSIN, url="http://localhost:8000/static/audio/AL_HSIN.mp3"),
+        MaqamAudio(maqam=maqam_AL_IRAQ, url="http://localhost:8000/static/audio/AL_IRAQ.mp3"),
+        MaqamAudio(maqam=maqam_AL_ARDHAWI, url="http://localhost:8000/static/audio/AL_ARDHAOUI.mp3"),
+    ]
 
 
 
@@ -306,6 +310,6 @@ with app.app_context():
         maqam_AL_HSIN,
         maqam_AL_IRAQ,
         maqam_AL_ARDHAWI,
-    ])
+    ] + audios)
     db.session.commit()
     print("Seeded database with 6 maqamet (Al Dhail, Al Maya, Sika, Al Hsin, Al Iraq, Al Ardhawi).")
