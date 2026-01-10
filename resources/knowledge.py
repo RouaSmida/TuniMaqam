@@ -4,12 +4,14 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request, url_for, current_app
 from werkzeug.utils import secure_filename
 from sqlalchemy import func
+from marshmallow import ValidationError
 
 from extensions import db
 from models.maqam import Maqam
 from models.contribution import MaqamContribution
 from models.maqam_audio import MaqamAudio
 from services.auth_service import require_jwt
+from schemas import contribution_schema, new_maqam_schema, contribution_review_schema
 
 knowledge_bp = Blueprint('knowledge', __name__, url_prefix='/knowledge')
 
@@ -176,17 +178,18 @@ def add_maqam_contribution(maqam_id):
         return jsonify({"error": "Maqam not found"}), 404
 
     data = request.get_json() or {}
-    c_type = data.get("type")
-    payload = data.get("payload")
     contributor_id = request.jwt_payload.get("email", "anonymous")
 
-    if not c_type or payload is None:
-        return jsonify({"error": "type and payload are required"}), 400
+    # Validate input using Marshmallow schema
+    try:
+        validated = contribution_schema.load(data)
+    except ValidationError as err:
+        return jsonify({"error": "Validation failed", "details": err.messages}), 400
 
     contrib = MaqamContribution(
         maqam_id=maqam.id,
-        type=c_type,
-        payload_json=json.dumps(payload),
+        type=validated["type"],
+        payload_json=json.dumps(validated["payload"]),
         status="pending",
         contributor_id=contributor_id,
     )
@@ -232,17 +235,19 @@ def propose_maqam():
       - Bearer: []
     """
     data = request.get_json() or {}
-    name_en = (data.get("name_en") or "").strip()
-    name_ar = (data.get("name_ar") or "").strip()
-    if not name_en or not name_ar:
-        return jsonify({"error": "name_en and name_ar are required"}), 400
+    
+    # Validate input using Marshmallow schema
+    try:
+        validated = new_maqam_schema.load(data)
+    except ValidationError as err:
+        return jsonify({"error": "Validation failed", "details": err.messages}), 400
 
     contributor = request.jwt_payload.get("email", "anonymous")
     contrib = MaqamContribution(
         maqam_id=None,
-        maqam_name=name_en,
+        maqam_name=validated["name_en"],
         type="new_maqam",
-        payload_json=json.dumps(data),
+        payload_json=json.dumps(validated),
         status="pending",
         contributor_id=contributor,
         contributor_score=0,
@@ -268,14 +273,16 @@ def review_contribution(contrib_id):
         return jsonify({"error": "Contribution not found"}), 404
 
     data = request.get_json() or {}
-    new_status = data.get("status")
+    
+    # Validate input using Marshmallow schema
+    try:
+        validated = contribution_review_schema.load(data)
+    except ValidationError as err:
+        return jsonify({"error": "Validation failed", "details": err.messages}), 400
 
-    if new_status not in ["accepted", "rejected"]:
-        return jsonify({"error": "status must be 'accepted' or 'rejected'"}), 400
-
-    contrib.status = new_status
+    contrib.status = validated["status"]
     contrib.reviewed_at = datetime.utcnow()
-    if new_status == "accepted":
+    if validated["status"] == "accepted":
         contrib.contributor_score = (contrib.contributor_score or 0) + 1
     db.session.commit()
     return jsonify({"id": contrib.id, "status": contrib.status, "contributor_score": contrib.contributor_score}), 200

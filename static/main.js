@@ -663,15 +663,21 @@
       try {
         const d = await api('/recommendations/maqam', 'POST', body);
         const out = document.getElementById('rec-output');
-        out.innerHTML = d.recommendations.map(r => `
-          <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:8px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-              <div style="color:var(--tunis-gold); font-weight:bold;">${r.maqam}</div>
-              <div class="tag blue">${Math.round((r.confidence||0)*100)}% match</div>
+        const recs = Array.isArray(d.recommendations) ? d.recommendations : [];
+        out.innerHTML = recs.map(r => {
+          const name = r.maqam || r.name || r.title || 'Unknown maqam';
+          const pct = typeof r.confidence === 'number' ? Math.round(r.confidence * 100) : 0;
+          const reason = r.reason || 'Based on your inputs';
+          return `
+            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                <div style="color:var(--tunis-gold); font-weight:bold;">${name}</div>
+                <div class="tag blue">${pct}% match</div>
+              </div>
+              <div style="font-size:0.8rem;">${reason}</div>
             </div>
-            <div style="font-size:0.8rem;">${r.reason}</div>
-          </div>
-        `).join('') || '<div style="color:var(--text-muted);">No matches.</div>';
+          `;
+        }).join('') || '<div style="color:var(--text-muted);">No matches.</div>';
       } catch(e) { notify(e.message, 'error'); }
       finally { setLoading(btn, false, 'Generate Ideas'); }
     }
@@ -1271,11 +1277,13 @@
         }
         
         const track = audioGameState.tracks[audioGameState.idx];
+        const trackId = track.audio_id || track.id;
+        const trackMaqamId = track.maqam_id || track.id;
         const total = audioGameState.tracks.length;
         const current = audioGameState.idx + 1;
         
         // Get 3 random wrong choices + correct one
-        const otherTracks = audioGameState.tracks.filter(t => t.id !== track.id);
+        const otherTracks = audioGameState.tracks.filter(t => (t.audio_id || t.id) !== trackId);
         const wrongChoices = otherTracks.sort(() => Math.random() - 0.5).slice(0, 3);
         const allChoices = [track, ...wrongChoices].sort(() => Math.random() - 0.5);
         
@@ -1306,18 +1314,21 @@
         };
         
         const box = document.getElementById('audio-choices');
-        box.innerHTML = allChoices.map(c => `<button class="btn-ghost" data-audio-choice="${c.id}" style="padding:14px; text-align:center;">${c.name}</button>`).join('');
+        box.innerHTML = allChoices.map(c => {
+          const choiceId = c.audio_id || c.id;
+          return `<button class="btn-ghost" data-audio-choice="${choiceId}" style="padding:14px; text-align:center;">${c.name}</button>`;
+        }).join('');
         
         box.querySelectorAll('[data-audio-choice]').forEach(btn => btn.onclick = () => {
           const resEl = document.getElementById('audio-result');
           const choiceId = parseInt(btn.dataset.audioChoice, 10);
-          const isCorrect = choiceId === track.id;
+          const isCorrect = choiceId === trackId;
           
           if (isCorrect) {
             audioGameState.correct++;
             resEl.innerHTML = '<span style="color:var(--tunis-teal); font-weight:bold;">✓ Correct!</span>';
             notify('Correct');
-            completeActivity(track.id, 'audio_mcq');
+            completeActivity(trackMaqamId, 'audio_mcq');
           } else {
             resEl.innerHTML = `<span style="color:var(--tunis-rose)">✗ Wrong! It was <strong>${track.name}</strong></span>`;
             notify('Wrong', 'error');
@@ -1328,7 +1339,7 @@
           
           // Highlight correct answer
           box.querySelectorAll('button').forEach(b => {
-            if (parseInt(b.dataset.audioChoice) === track.id) {
+            if (parseInt(b.dataset.audioChoice) === trackId) {
               b.style.borderColor = 'var(--tunis-teal)';
               b.style.background = 'rgba(13,118,194,0.15)';
             }
@@ -1616,6 +1627,26 @@
               <p style="color:var(--text-muted); font-size:0.95rem; margin-top:6px;">Ranks users by their best combined score across quizzes and activities. Data is fetched live from /learning/leaderboard.</p>
               ${rows || '<p style="color:var(--text-muted);">No leaderboard data yet.</p>'}
             `); 
+        } catch(e) { notify(e.message, 'error'); }
+    }
+
+    async function showTopContributors() {
+        try {
+            const d = await api('/knowledge/top-contributors');
+            const rows = (d.contributors || []).map(c => `
+              <div class="glass-card" style="padding:12px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong>${c.contributor_id || 'Unknown'}</strong>
+                  <span class="tag blue">${c.total_contributions || 0} accepted</span>
+                </div>
+                <div style="color:var(--text-muted); font-size:0.9rem;">Score: ${c.total_score || 0}</div>
+              </div>
+            `).join('');
+            openModal(`
+              <h3 style="color:var(--tunis-gold)">Top Contributors</h3>
+              <p style="color:var(--text-muted); font-size:0.95rem; margin-top:6px;">Based on accepted contributions.</p>
+              ${rows || '<p style="color:var(--text-muted);">No accepted contributions yet.</p>'}
+            `);
         } catch(e) { notify(e.message, 'error'); }
     }
 

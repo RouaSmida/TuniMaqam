@@ -9,5 +9,7 @@ flasgger
 flask-cors
 flask-limiter
 pytest
+marshmallow
+flask-marshmallow
 
 

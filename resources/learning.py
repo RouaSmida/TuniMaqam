@@ -1,13 +1,16 @@
 import json
 import random
 from flask import Blueprint, jsonify, request
+from marshmallow import ValidationError
 
 from extensions import db
 from models.maqam import Maqam
+from models.maqam_audio import MaqamAudio
 from models.user_stat import UserStat
 from models.activity_log import ActivityLog
 from services.auth_service import require_jwt
 from services.user_service import get_or_create_user_stat, record_activity, update_quiz_stats
+from schemas import quiz_answer_schema
 
 learning_bp = Blueprint('learning', __name__, url_prefix='/learning')
 
@@ -348,10 +351,15 @@ def learning_quiz_answer(quiz_id):
     if not quiz:
         return jsonify({"error": "quiz not found"}), 404
     data = request.get_json() or {}
-    answers = data.get("answers")
     user_id = request.jwt_payload.get("email", "anonymous")
-    if not isinstance(answers, list):
-        return jsonify({"error": "answers list is required"}), 400
+    
+    # Validate input using Marshmallow schema
+    try:
+        validated = quiz_answer_schema.load(data)
+    except ValidationError as err:
+        return jsonify({"error": "Validation failed", "details": err.messages}), 400
+    
+    answers = validated["answers"]
     questions = quiz["questions"]
     total = len(questions)
     correct_count = 0
@@ -495,7 +503,7 @@ def learning_matching_game():
 @require_jwt(roles=["admin", "expert", "learner"])
 def audio_recognition_game():
     """
-    Get audio recognition game
+    Get audio recognition game (single round)
     ---
     tags:
       - Learning
@@ -503,15 +511,28 @@ def audio_recognition_game():
       200:
         description: Audio recognition game
     """
-    maqamet = [m for m in Maqam.query.all() if m.audio_url]
-    if not maqamet:
+    tracks = (
+        db.session.query(
+            MaqamAudio.id.label("audio_id"),
+            MaqamAudio.url,
+            Maqam.id.label("maqam_id"),
+            Maqam.name_en,
+        )
+        .join(Maqam, MaqamAudio.maqam_id == Maqam.id)
+        .all()
+    )
+
+    if not tracks:
         return jsonify({"error": "no audio available"}), 400
-    choices = random.sample(maqamet, min(4, len(maqamet)))
+
+    choices = random.sample(tracks, min(4, len(tracks)))
     target = random.choice(choices)
+
     return jsonify({
-        "audio_url": target.audio_url,
-        "choices": [{"id": m.id, "name": m.name_en} for m in choices],
-        "answer_id": target.id
+        "audio_id": target.audio_id,
+        "audio_url": target.url,
+        "choices": [{"id": c.maqam_id, "name": c.name_en} for c in choices],
+        "answer_id": target.maqam_id,
     }), 200
 
 
@@ -527,12 +548,32 @@ def audio_recognition_playlist():
       200:
         description: Audio recognition playlist
     """
-    maqamet = [m for m in Maqam.query.all() if m.audio_url]
-    if not maqamet:
+    tracks = (
+        db.session.query(
+            MaqamAudio.id.label("audio_id"),
+            MaqamAudio.url,
+            Maqam.id.label("maqam_id"),
+            Maqam.name_en,
+        )
+        .join(Maqam, MaqamAudio.maqam_id == Maqam.id)
+        .all()
+    )
+
+    if not tracks:
         return jsonify({"error": "no audio available"}), 400
-    random.shuffle(maqamet)
+
+    random.shuffle(tracks)
+
     return jsonify({
-        "tracks": [{"id": m.id, "name": m.name_en, "audio_url": m.audio_url} for m in maqamet]
+        "tracks": [
+            {
+                "audio_id": t.audio_id,
+                "maqam_id": t.maqam_id,
+                "name": t.name_en,
+                "audio_url": t.url,
+            }
+            for t in tracks
+        ]
     }), 200
 
 

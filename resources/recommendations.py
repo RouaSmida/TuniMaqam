@@ -1,8 +1,10 @@
 import json
 from flask import Blueprint, jsonify, request
+from marshmallow import ValidationError
 
 from models.maqam import Maqam
 from services.auth_service import require_jwt
+from schemas import recommendation_request_schema
 
 recommendations_bp = Blueprint('recommendations', __name__, url_prefix='/recommendations')
 
@@ -11,18 +13,47 @@ recommendations_bp = Blueprint('recommendations', __name__, url_prefix='/recomme
 @require_jwt(roles=["admin", "expert", "learner"])
 def recommend_maqam():
     """
-    Recommend a maqam based on user input.
+    Recommend maqamet for a scenario
+    ---
+    tags:
+      - Recommendations
+    security:
+      - Bearer: []
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            mood: {type: string}
+            event: {type: string}
+            region: {type: string}
+            time_period: {type: string}
+            season: {type: string}
+            preserve_heritage: {type: boolean}
+            simple_for_beginners: {type: boolean}
+    responses:
+      200:
+        description: Top 3 recommendations
+      401:
+        description: Unauthorized
     """
-    # Dummy implementation for now
-    return jsonify({"recommendations": ["Maqam Example"]})
+    data = request.get_json() or {}
+    
+    # Validate input using Marshmallow schema
+    try:
+        validated = recommendation_request_schema.load(data)
+    except ValidationError as err:
+        return jsonify({"error": "Validation failed", "details": err.messages}), 400
 
-    mood = (data.get("mood") or "").lower().strip()
-    event = (data.get("event") or "").lower().strip()
-    region = (data.get("region") or "").lower().strip()
-    time_period = (data.get("time_period") or "").lower().strip()
-    season = (data.get("season") or "").lower().strip()
-    preserve = bool(data.get("preserve_heritage"))
-    simple_for_beginners = bool(data.get("simple_for_beginners"))
+    mood = (validated.get("mood") or "").lower().strip()
+    event = (validated.get("event") or "").lower().strip()
+    region = (validated.get("region") or "").lower().strip()
+    time_period = (validated.get("time_period") or "").lower().strip()
+    season = (validated.get("season") or "").lower().strip()
+    preserve = validated.get("preserve_heritage", False)
+    simple_for_beginners = validated.get("simple_for_beginners", False)
 
     if not any([mood, event, region, time_period, season, preserve, simple_for_beginners]):
         return jsonify({"recommendations": []}), 200
@@ -47,6 +78,8 @@ def recommend_maqam():
         score = 0.0
         evidence = []
         reason_parts = []
+
+        name_en = m.name_en or m.name_ar or f"Maqam {m.id}"
 
         s, ev = emotion_score(mood, m)
         score += s
@@ -114,8 +147,13 @@ def recommend_maqam():
         if score <= 0 or not evidence:
             continue
 
+        if not reason_parts:
+            reason_parts.append("context match")
+
+        confidence = round(score, 2)
+
         candidates.append({
-            "maqam": m.name_en,
+            "maqam": name_en,
             "maqam_ar": m.name_ar,
             "emotion": m.emotion,
             "emotion_ar": getattr(m, "emotion_ar", None),
@@ -123,8 +161,8 @@ def recommend_maqam():
             "usage_ar": getattr(m, "usage_ar", None),
             "regions": json.loads(m.regions_json) if m.regions_json else [],
             "regions_ar": json.loads(getattr(m, "regions_ar_json", "[]") or "[]"),
-            "confidence": round(score, 2),
-            "reason": "; ".join(reason_parts),
+            "confidence": confidence,
+            "reason": "; ".join(reason_parts) or "Based on your inputs",
             "rarity_level": m.rarity_level,
             "difficulty_label": m.difficulty_label,
             "evidence": evidence,

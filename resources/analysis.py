@@ -1,9 +1,11 @@
 import os
 import time
 from flask import Blueprint, jsonify, request, current_app
+from marshmallow import ValidationError
 
 from services.auth_service import require_jwt
 from services.analysis_service import analyze_notes_core
+from schemas import notes_analysis_schema
 
 analysis_bp = Blueprint('analysis', __name__, url_prefix='/analysis')
 
@@ -39,10 +41,15 @@ def analyze_notes():
         description: Unauthorized
     """
     data = request.get_json() or {}
-    notes = data.get("notes")
-    optional_mood = data.get("optional_mood")
-    if not notes or not isinstance(notes, list):
-        return jsonify({"error": "notes list is required"}), 400
+    
+    # Validate input using Marshmallow schema
+    try:
+        validated = notes_analysis_schema.load(data)
+    except ValidationError as err:
+        return jsonify({"error": "Validation failed", "details": err.messages}), 400
+    
+    notes = validated["notes"]
+    optional_mood = validated.get("optional_mood")
     candidates = analyze_notes_core(notes, optional_mood)
     return jsonify({"candidates": candidates}), 200
 
