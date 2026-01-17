@@ -1,4 +1,4 @@
-﻿\documentclass[10pt,a4paper]{report}
+\documentclass[10pt,a4paper]{report}
 \usepackage{geometry}
 \usepackage{fontspec}
 \usepackage{hyperref}
@@ -223,7 +223,7 @@
 
 % Main title
 {\fontsize{38}{44}\selectfont\bfseries\color{tmBlue} TuniMaqam API\\[1cm]}
-{\Large A REST API Platform for Tunisian Maqam heritage (\textit{Ṭbu'a})\\[0.4cm]}
+{\Large A REST API Platform for Tunisian Maqam heritage (\textit{Tbu'a})\\[0.4cm]}
 {\large Preservation, Education, and Discovery}
 
 \vspace{1.2cm}
@@ -275,9 +275,9 @@ The platform is built using Flask with SQLAlchemy ORM, secured through JWT authe
 
 \section{Context and Motivation}
 
-Tunisia's maqam tradition---known locally as \textit{ṭab'} (singular) or \textit{ṭbūʿ} (plural)---represents one of the Arab world's most sophisticated and emotionally rich musical systems. This living heritage has accompanied weddings, mourning, celebrations, and spiritual gatherings for centuries. Unlike Western music's major/minor dichotomy, the maqam system encompasses dozens of distinct modal frameworks, each carrying specific emotional connotations and cultural contexts.
+Tunisia's maqam tradition---known locally as \textit{Tab'} (singular) or \textit{Tbu'} (plural)---represents one of the Arab world's most sophisticated and emotionally rich musical systems. This living heritage has accompanied weddings, mourning, celebrations, and spiritual gatherings for centuries. Unlike Western music's major/minor dichotomy, the maqam system encompasses dozens of distinct modal frameworks, each carrying specific emotional connotations and cultural contexts.
 
-Yet, like many oral traditions, this heritage faces the relentless erosion of time. Master musicians pass away without transferring their complete knowledge; younger generations gravitate toward globalized musical forms; and the subtle nuances distinguishing one ṭab' from another risk being forgotten.
+Yet, like many oral traditions, this heritage faces the relentless erosion of time. Master musicians pass away without transferring their complete knowledge; younger generations gravitate toward globalized musical forms; and the subtle nuances distinguishing one ?ab' from another risk being forgotten.
 
 \section{Problem Statement}
 
@@ -389,69 +389,6 @@ NFR-08 & Localization & System shall support bilingual content (Arabic/English) 
 \bottomrule
 \end{longtable}
 
-\section{Use Case Diagram}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[scale=0.85, transform shape]
-	% System boundary
-	\draw[thick, rounded corners, tmBlue] (-0.5,-6) rectangle (9,5);
-	\node[anchor=north west, tmBlue, font=\bfseries] at (-0.3,4.8) {TuniMaqam System};
-	
-	% Actors
-	\node[circle, draw, minimum size=0.8cm] (learner) at (-2.5,3) {};
-	\node[below=0.1cm of learner, font=\small] {Learner};
-	\draw (-2.5,2.6) -- (-2.5,2);
-	\draw (-2.8,2.3) -- (-2.2,2.3);
-	\draw (-2.5,2) -- (-2.8,1.4);
-	\draw (-2.5,2) -- (-2.2,1.4);
-	
-	\node[circle, draw, minimum size=0.8cm] (expert) at (-2.5,0) {};
-	\node[below=0.1cm of expert, font=\small] {Expert};
-	\draw (-2.5,-0.4) -- (-2.5,-1);
-	\draw (-2.8,-0.7) -- (-2.2,-0.7);
-	\draw (-2.5,-1) -- (-2.8,-1.6);
-	\draw (-2.5,-1) -- (-2.2,-1.6);
-	
-	\node[circle, draw, minimum size=0.8cm] (admin) at (-2.5,-3) {};
-	\node[below=0.1cm of admin, font=\small] {Admin};
-	\draw (-2.5,-3.4) -- (-2.5,-4);
-	\draw (-2.8,-3.7) -- (-2.2,-3.7);
-	\draw (-2.5,-4) -- (-2.8,-4.6);
-	\draw (-2.5,-4) -- (-2.2,-4.6);
-	
-	% Use cases
-	\node[ellipse, draw, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small] (uc1) at (4,4) {Browse Maqamet};
-	\node[ellipse, draw, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small] (uc2) at (4,3) {Take Quiz};
-	\node[ellipse, draw, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small] (uc3) at (4,2) {Analyze Notes};
-	\node[ellipse, draw, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small] (uc4) at (4,1) {Get Recommendations};
-	\node[ellipse, draw, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small] (uc5) at (4,0) {Submit Contribution};
-	\node[ellipse, draw, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small] (uc6) at (4,-1) {Review Contribution};
-	\node[ellipse, draw, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small] (uc7) at (4,-2) {Upload Audio};
-	\node[ellipse, draw, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small] (uc8) at (4,-3) {Manage Maqamet};
-	\node[ellipse, draw, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small] (uc9) at (4,-4) {Manage Users};
-	\node[ellipse, draw, minimum width=2.8cm, minimum height=0.8cm, align=center, font=\small] (uc10) at (4,-5) {View Analytics};
-	
-	% Connections
-	\draw (-1.5,3) -- (uc1);
-	\draw (-1.5,3) -- (uc2);
-	\draw (-1.5,3) -- (uc3);
-	\draw (-1.5,3) -- (uc4);
-	\draw (-1.5,3) -- (uc5);
-	
-	\draw (-1.5,0) -- (uc1);
-	\draw (-1.5,0) -- (uc6);
-	\draw (-1.5,0) -- (uc7);
-	
-	\draw (-1.5,-3) -- (uc8);
-	\draw (-1.5,-3) -- (uc9);
-	\draw (-1.5,-3) -- (uc10);
-\end{tikzpicture}
-\caption{Use Case Diagram showing actor interactions with TuniMaqam}
-\label{fig:usecase}
-\end{figure}
-
-%------------------------------------------------------------------------------
 \chapter{System Design and Architecture}
 %------------------------------------------------------------------------------
 
@@ -459,7 +396,7 @@ This chapter presents the architectural design decisions and UML models for Tuni
 
 \section{Architectural Pattern}
 
-TuniMaqam follows a \textbf{layered architecture} with clear separation of concerns:
+TuniMaqam follows a \textbf{layered architecture} with clear separation of concerns, adhering to REST principles: stateless requests, resource-based URLs, standard HTTP verbs (GET, POST, PUT, DELETE), and consistent JSON responses with appropriate status codes.
 
 \begin{figure}[H]
 \centering
@@ -476,136 +413,26 @@ TuniMaqam follows a \textbf{layered architecture} with clear separation of conce
 \label{fig:layers}
 \end{figure}
 
-\section{Component Diagram}
+\subsection{Component Diagram}
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=1.5cm and 2cm, scale=0.9, transform shape]
-	% Components
-	\node[draw, thick, minimum width=2.5cm, minimum height=1.2cm, align=center] (auth) {Auth\\Service};
-	\node[draw, thick, minimum width=2.5cm, minimum height=1.2cm, align=center, right=of auth] (knowledge) {Knowledge\\Service};
-	\node[draw, thick, minimum width=2.5cm, minimum height=1.2cm, align=center, right=of knowledge] (learning) {Learning\\Service};
-	\node[draw, thick, minimum width=2.5cm, minimum height=1.2cm, align=center, below=of auth] (analysis) {Analysis\\Service};
-	\node[draw, thick, minimum width=2.5cm, minimum height=1.2cm, align=center, below=of knowledge] (recommend) {Recommendation\\Service};
-	\node[draw, thick, minimum width=2.5cm, minimum height=1.2cm, align=center, below=of learning] (external) {AssemblyAI\\(External)};
-	\node[draw, thick, minimum width=8cm, minimum height=1cm, align=center, below=2cm of recommend] (db) {SQLAlchemy Models / Database};
-	
-	% Connections
-	\draw[->, thick] (auth) -- (db);
-	\draw[->, thick] (knowledge) -- (db);
-	\draw[->, thick] (learning) -- (db);
-	\draw[->, thick] (analysis) -- (db);
-	\draw[->, thick] (recommend) -- (db);
-	\draw[->, thick] (analysis) -- (knowledge);
-	\draw[->, thick] (recommend) -- (knowledge);
-	\draw[->, thick] (learning) -- (knowledge);
-	\draw[->, thick, dashed] (analysis) -- (external);
+\begin{tikzpicture}[node distance=1.2cm and 1.8cm, scale=0.85, transform shape]
+\node[draw, thick, minimum width=2.2cm, minimum height=1cm, align=center] (auth) {Auth};
+\node[draw, thick, minimum width=2.2cm, minimum height=1cm, align=center, right=of auth] (knowledge) {Knowledge};
+\node[draw, thick, minimum width=2.2cm, minimum height=1cm, align=center, right=of knowledge] (learning) {Learning};
+\node[draw, thick, minimum width=2.2cm, minimum height=1cm, align=center, below=of auth] (analysis) {Analysis};
+\node[draw, thick, minimum width=2.2cm, minimum height=1cm, align=center, below=of knowledge] (recommend) {Recommend};
+\node[draw, thick, minimum width=2.2cm, minimum height=1cm, align=center, below=of learning] (external) {AssemblyAI};
+\node[draw, thick, minimum width=7cm, minimum height=0.8cm, align=center, below=1.5cm of recommend] (db) {Database (SQLAlchemy)};
+\draw[->, thick] (auth) -- (db);
+\draw[->, thick] (knowledge) -- (db);
+\draw[->, thick] (learning) -- (db);
+\draw[->, thick] (analysis) -- (knowledge);
+\draw[->, thick] (recommend) -- (knowledge);
+\draw[->, thick, dashed] (analysis) -- (external);
 \end{tikzpicture}
-\caption{Component Diagram showing service interactions}
-\label{fig:component}
-\end{figure}
-
-\section{Entity-Relationship Diagram}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[node distance=2cm and 3cm, scale=0.85, transform shape]
-	% Entities
-	\node[draw, thick, rectangle, minimum width=3cm, minimum height=2.5cm, align=left, font=\small] (maqam) {
-		\textbf{Maqam}\\
-		\underline{id}: Integer\\
-		name: String\\
-		arabic\_name: String\\
-		emotion: String\\
-		usage: Text\\
-		ajnas: JSON\\
-		regions: JSON\\
-		difficulty: Integer\\
-		is\_rare: Boolean
-	};
-	
-	\node[draw, thick, rectangle, minimum width=3cm, minimum height=1.5cm, align=left, font=\small, right=of maqam] (audio) {
-		\textbf{MaqamAudio}\\
-		\underline{id}: Integer\\
-		maqam\_id: FK\\
-		url: String
-	};
-	
-	\node[draw, thick, rectangle, minimum width=3cm, minimum height=2cm, align=left, font=\small, below=of maqam] (contrib) {
-		\textbf{Contribution}\\
-		\underline{id}: Integer\\
-		maqam\_id: FK\\
-		contributor\_id: String\\
-		type: String\\
-		payload: JSON\\
-		status: String
-	};
-	
-	\node[draw, thick, rectangle, minimum width=3cm, minimum height=1.8cm, align=left, font=\small, right=of contrib] (userstat) {
-		\textbf{UserStat}\\
-		\underline{id}: Integer\\
-		user\_id: String\\
-		best\_score: Integer\\
-		total\_quizzes: Integer\\
-		activity\_count: Integer
-	};
-	
-	\node[draw, thick, rectangle, minimum width=3cm, minimum height=1.5cm, align=left, font=\small, right=of userstat] (activity) {
-		\textbf{ActivityLog}\\
-		\underline{id}: Integer\\
-		user\_id: String\\
-		maqam\_id: FK\\
-		activity\_type: String\\
-		timestamp: DateTime
-	};
-	
-	% Relationships
-	\draw[thick] (maqam) -- node[above, font=\small] {1} (audio);
-	\node[font=\small] at ($(maqam)!0.85!(audio)$) [above] {*};
-	
-	\draw[thick] (maqam) -- node[left, font=\small] {1} (contrib);
-	\node[font=\small] at ($(maqam)!0.85!(contrib)$) [left] {*};
-	
-	\draw[thick] (maqam) -- (activity);
-\end{tikzpicture}
-\caption{Entity-Relationship Diagram for TuniMaqam data model}
-\label{fig:erd}
-\end{figure}
-
-\section{Sequence Diagram: Quiz Flow}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[scale=0.8, transform shape]
-	% Lifelines
-	\node (user) at (0,0) {\textbf{User}};
-	\node (api) at (4,0) {\textbf{API}};
-	\node (learning) at (8,0) {\textbf{Learning}};
-	\node (db) at (12,0) {\textbf{Database}};
-	
-	\draw[dashed] (user) -- (0,-8);
-	\draw[dashed] (api) -- (4,-8);
-	\draw[dashed] (learning) -- (8,-8);
-	\draw[dashed] (db) -- (12,-8);
-	
-	% Messages
-	\draw[->, thick] (0,-1) -- node[above, font=\small] {POST /quiz/start} (4,-1);
-	\draw[->, thick] (4,-1.5) -- node[above, font=\small] {generateQuiz()} (8,-1.5);
-	\draw[->, thick] (8,-2) -- node[above, font=\small] {getMaqamet()} (12,-2);
-	\draw[<-, thick] (8,-2.5) -- node[above, font=\small] {maqamList} (12,-2.5);
-	\draw[<-, thick] (4,-3) -- node[above, font=\small] {quiz\_id, questions} (8,-3);
-	\draw[<-, thick] (0,-3.5) -- node[above, font=\small] {200 OK + quiz} (4,-3.5);
-	
-	\draw[->, thick] (0,-4.5) -- node[above, font=\small] {POST /quiz/\{id\}/answer} (4,-4.5);
-	\draw[->, thick] (4,-5) -- node[above, font=\small] {evaluateAnswers()} (8,-5);
-	\draw[->, thick] (8,-5.5) -- node[above, font=\small] {updateUserStat()} (12,-5.5);
-	\draw[<-, thick] (8,-6) -- node[above, font=\small] {updated} (12,-6);
-	\draw[->, thick] (8,-6.5) -- node[above, font=\small] {logActivity()} (12,-6.5);
-	\draw[<-, thick] (4,-7) -- node[above, font=\small] {score, feedback} (8,-7);
-	\draw[<-, thick] (0,-7.5) -- node[above, font=\small] {200 OK + results} (4,-7.5);
-\end{tikzpicture}
-\caption{Sequence Diagram for Quiz interaction flow}
-\label{fig:sequence}
+\caption{Component interactions}
 \end{figure}
 
 \section{Technology Stack}
@@ -657,7 +484,21 @@ Endpoints validate input using \texttt{schema.load(data)}, which raises \texttt{
 
 \section{Data Model}
 
-The data model captures maqamet with their cultural essence: \textbf{Maqam} (bilingual names, emotions, usage contexts, ajnas, regions, difficulty, rarity); \textbf{MaqamAudio} (audio recordings with URLs); \textbf{MaqamContribution} (pending/accepted/rejected contributions with payload and reviewer metadata); \textbf{UserStat} (learner progress: scores, quiz counts, skill levels); \textbf{ActivityLog} (audit trail of user activities).
+The data model captures maqamet with their cultural essence:
+
+\begin{center}
+\begin{tabular}{lp{8cm}}
+\toprule
+\textbf{Entity} & \textbf{Key Attributes}\\
+\midrule
+\texttt{Maqam} & Bilingual names, emotions, ajnas, regions, difficulty, rarity\\
+\texttt{MaqamAudio} & Audio URLs, uploader, approval status\\
+\texttt{Contribution} & Type, payload, status (pending/accepted/rejected)\\
+\texttt{UserStat} & Scores, quiz counts, skill level, streak\\
+\texttt{ActivityLog} & Activity type, points earned, timestamp\\
+\bottomrule
+\end{tabular}
+\end{center}
 
 %------------------------------------------------------------------------------
 \chapter{Core Services Implementation}
@@ -702,7 +543,7 @@ Each maqam record contains rich, structured metadata:
 {
   "id": 1,
   "name": "Rast",
-  "arabic_name": "Ø±Ø§Ø³Øª",
+  "arabic_name": "راست",
   "emotion": "joy",
   "emotion_weights": {"joy": 0.9, "spirituality": 0.5},
   "usage": "weddings, celebrations, morning performances",
@@ -710,7 +551,7 @@ Each maqam record contains rich, structured metadata:
     {"name": "Rast", "notes": ["C", "D", "E half-flat", "F", "G"]},
     {"name": "Nahawand", "notes": ["G", "A", "Bb", "C"]}
   ],
-  "regions": {"tunis": "ØªÙˆÙ†Ø³", "sfax": "ØµÙØ§Ù‚Ø³"},
+  "regions": {"tunis": "تونس", "sfax": "صفاقس"},
   "difficulty": 2,
   "is_rare": false,
   "related_maqamat": ["Suznak", "Kirdan"]
@@ -1055,7 +896,27 @@ Three roles with hierarchical permissions:
 \end{tabular}
 \end{center}
 
-Security layers include JWT tokens (HS256), Flask-Limiter rate limiting (200/hour default), CORS allowlisting, and activity audit logging.
+\subsection{Deployment Architecture}
+
+Production deployment follows a cloud-native approach:
+
+\begin{itemize}[leftmargin=0.6cm, topsep=4pt, itemsep=2pt]
+\item \textbf{Platform:} Render.com (PaaS) with auto-scaling
+\item \textbf{Container:} Docker image built via GitHub Actions CI/CD
+\item \textbf{Database:} Managed PostgreSQL with automated backups
+\item \textbf{SSL:} Automatic HTTPS via Let's Encrypt
+\item \textbf{Monitoring:} Health checks at \texttt{/ping}, logs via Render dashboard
+\end{itemize}
+
+\subsection{Security Implementation}
+
+\begin{itemize}[leftmargin=0.6cm, topsep=4pt, itemsep=2pt]
+\item \textbf{JWT Tokens:} HS256-signed, 24-hour expiry, contains user ID and role
+\item \textbf{Rate Limiting:} Flask-Limiter with 200 requests/hour (auto-disabled in test mode)
+\item \textbf{CORS:} Allowlisted origins only; preflight caching
+\item \textbf{Audit Logging:} All mutations logged with user ID and timestamp
+\item \textbf{Input Validation:} Marshmallow schemas reject malformed requests
+\end{itemize}
 
 \section{Configuration and Deployment}
 
@@ -1098,18 +959,17 @@ TC-12 & Rate Limiting & Exceed rate limit & 429 Too Many & \cmark Pass\\
 
 \subsection{Test Coverage}
 
-Test coverage is measured via \texttt{pytest tests/ --cov=.} with HTML reports. Current implementation focuses on critical path coverage:
+The test suite comprises \textbf{85 passing tests} across 4 test files, executed via \texttt{pytest tests/ -v}:
 
 \begin{center}
 \begin{tabular}{lcp{5.5cm}}
 \toprule
-\textbf{Module} & \textbf{Status} & \textbf{Key Tests} \\
+\textbf{Test File} & \textbf{Tests} & \textbf{Coverage} \\
 \midrule
-Knowledge & \cmark & Maqam CRUD, contributions, regions \\
-Learning & \cmark & Quiz start/answer, activity logging, leaderboard \\
-Analysis & \cmark & Note analysis, empty input handling \\
-Recommendations & \cmark & Context scoring, heritage boost \\
-Auth & \cmark & JWT validation, demo token, role checks \\
+\texttt{test\_learning.py} & 22 & Quiz, flashcards, activities, leaderboard \\
+\texttt{test\_auth.py} & 25 & JWT validation, OAuth, roles, protected routes \\
+\texttt{test\_analysis.py} & 17 & Note analysis, confidence scoring, edge cases \\
+\texttt{test\_recommendations.py} & 21 & Multi-factor ranking, heritage boost, context \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1130,6 +990,115 @@ Scalability & PostgreSQL migration path; Redis-backed rate limiting\\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\section{Continuous Integration and Deployment}
+
+A 5-stage GitHub Actions pipeline (\texttt{.github/workflows/ci.yml}) automates quality assurance:
+
+\begin{center}
+\begin{tabular}{clp{6cm}}
+\toprule
+\textbf{Stage} & \textbf{Name} & \textbf{Actions}\\
+\midrule
+1 & Lint & flake8 code style validation\\
+2 & Test & pytest with 85 test cases, coverage report\\
+3 & Build & Docker image construction\\
+4 & Deploy & Render.com webhook trigger\\
+5 & Verify & Post-deployment health check\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Pipeline triggers on push to \texttt{main} and all pull requests, ensuring code quality before merge.
+
+\section{Cloud Hosting Configuration}
+
+TuniMaqam deploys to Render.com via \texttt{render.yaml} Blueprint specification:
+
+\begin{itemize}[leftmargin=0.6cm, topsep=4pt, itemsep=2pt]
+\item \textbf{Web Service:} Python 3.11, Gunicorn with 4 workers
+\item \textbf{Database:} PostgreSQL 15 with daily backups
+\item \textbf{Environment:} Production secrets via Render dashboard
+\item \textbf{Health Check:} \texttt{/ping} endpoint monitoring
+\item \textbf{Auto-Deploy:} Git push triggers automatic deployment
+\end{itemize}
+
+\section{Docker Containerization}
+
+Production deployment uses Docker (\texttt{Dockerfile} and \texttt{docker-compose.yml}):
+
+\begin{itemize}[leftmargin=0.6cm, topsep=4pt, itemsep=2pt]
+\item \textbf{Base Image:} Python 3.11-slim for minimal footprint
+\item \textbf{Port:} 8000 (configurable via \texttt{PORT} env)
+\item \textbf{Compose Services:} Web app + PostgreSQL database
+\item \textbf{Volumes:} Persistent database storage, rotating logs
+\end{itemize}
+
+\section{API Documentation}
+
+Comprehensive documentation is provided:
+\begin{itemize}[leftmargin=0.6cm, topsep=4pt, itemsep=2pt]
+\item \textbf{Swagger UI:} Interactive API explorer at \texttt{/apidocs}
+\item \textbf{Authentication Guide:} \texttt{docs/AUTHENTICATION.md} - JWT flow, OAuth setup, role-based access
+\item \textbf{Error Catalog:} \texttt{docs/ERROR\_CATALOG.md} - All error codes with causes and solutions
+\end{itemize}
+
+%------------------------------------------------------------------------------
+\chapter{Declaration of AI/LLM Assistance}
+
+In accordance with academic integrity requirements, this section documents the use of Large Language Model (LLM) tools during the development of TuniMaqam.
+
+\section{Tools Used}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{0.25\textwidth}p{0.20\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{Tool} & \textbf{Version} & \textbf{Primary Use}\\
+\midrule
+GitHub Copilot & Latest (2024-2025) & In-editor code suggestions and completion\\
+Claude (Anthropic) & Claude 3.5/4 & Architecture discussion, documentation drafting\\
+ChatGPT & GPT-4 & Algorithm explanation, debugging assistance\\
+\bottomrule
+\end{tabular}
+\caption{LLM tools used during development}
+\end{table}
+
+\section{Areas Where LLM Assistance Was Beneficial}
+
+\begin{enumerate}[leftmargin=0.8cm, topsep=4pt, itemsep=2pt]
+\item \textbf{Boilerplate Generation:} Flask route decorators, SQLAlchemy model definitions, Marshmallow schemas
+\item \textbf{Documentation:} API endpoint descriptions, docstrings, README content
+\item \textbf{Code Patterns:} JWT authentication flow, error handling patterns, validation logic
+\item \textbf{Testing:} pytest fixture generation, test case suggestions
+\item \textbf{DevOps:} Docker configuration, GitHub Actions workflows, deployment scripts
+\end{enumerate}
+
+\section{Areas Where LLM Assistance Was Limited}
+
+\begin{enumerate}[leftmargin=0.8cm, topsep=4pt, itemsep=2pt]
+\item \textbf{Domain Knowledge:} Tunisian maqam theory required human expertise; LLMs lack deep understanding of regional musical traditions
+\item \textbf{Algorithm Design:} The Precision-Coverage confidence model and multi-factor recommendation scoring required original mathematical formulation
+\item \textbf{Cultural Context:} Heritage preservation priorities and UNESCO alignment decisions were human-driven
+\item \textbf{Integration:} Connecting AssemblyAI transcription to musical note extraction required custom logic
+\end{enumerate}
+
+\section{Human Contributions}
+
+The following aspects were entirely human-driven:
+
+\begin{itemize}[leftmargin=0.6cm, topsep=4pt, itemsep=2pt]
+\item Project vision, scope definition, and cultural preservation goals
+\item Maqam database design (scale structures, regional mappings, historical context)
+\item Selection and curation of authentic audio samples
+\item Validation and testing of all generated code
+\item Final architectural decisions and technology choices
+\item User experience design for learning workflows
+\item Security model design (role definitions, permission scopes)
+\item All code review and quality assurance
+\end{itemize}
+
+
 
 %------------------------------------------------------------------------------
 \chapter{Conclusion and Future Work}
@@ -1193,7 +1162,9 @@ Preserving the Past. Educating the Present. Inspiring the Future.
 TuniMaqam demonstrates that technology can serve as a bridge between generations, making cultural heritage accessible while respecting its authenticity. We invite musicians, researchers, and developers to contribute to this ongoing mission of preservation through innovation.
 
 %------------------------------------------------------------------------------
-% References
+
+%------------------------------------------------------------------------------
+% LLM Usage Declaration
 %------------------------------------------------------------------------------
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{References}

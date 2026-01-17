@@ -1,0 +1,113 @@
+# Render.com Deployment Configuration
+# Documentation: https://render.com/docs/yaml-spec
+#
+# This file configures TuniMaqam for deployment on Render.com
+# Deploy by connecting your GitHub repository to Render
+
+services:
+  # Main Web Service
+  - type: web
+    name: tunimaqam-api
+    runtime: python
+    region: frankfurt  # Closest to Tunisia
+    plan: free  # Use 'starter' or 'standard' for production
+
+    # Build Configuration
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    
+    # Start Command
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 2
+
+    # Health Check
+    healthCheckPath: /health
+
+    # Environment Variables
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      
+      - key: PYTHON_VERSION
+        value: "3.11.6"
+      
+      # Database URL - Use Render PostgreSQL for production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tunimaqam-db
+          property: connectionString
+      
+      # JWT Secret - Generate from Render dashboard
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      
+      # Google OAuth (set manually in Render dashboard)
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      
+      # Audio Analysis API (optional, set manually if available)
+      - key: AUDD_API_KEY
+        sync: false
+      
+      # Allow demo mode in production (set to 'false' for strict security)
+      - key: ALLOW_DEMO_TOKEN
+        value: "true"
+      
+      # Logging
+      - key: LOG_LEVEL
+        value: INFO
+
+    # Auto-deploy on push to main branch
+    autoDeploy: true
+
+    # Branch to deploy from
+    branch: main
+
+  # Background Worker (optional, for async tasks)
+  # - type: worker
+  #   name: tunimaqam-worker
+  #   runtime: python
+  #   buildCommand: pip install -r requirements.txt
+  #   startCommand: python worker.py
+  #   envVars:
+  #     - key: DATABASE_URL
+  #       fromDatabase:
+  #         name: tunimaqam-db
+  #         property: connectionString
+
+# PostgreSQL Database
+databases:
+  - name: tunimaqam-db
+    region: frankfurt
+    plan: free  # Use 'starter' for production
+    databaseName: tunimaqam
+    user: tunimaqam_user
+    
+    # IP Access List (leave empty for Render internal access only)
+    ipAllowList: []
+
+# Static Site (optional, for separate frontend)
+# staticSites:
+#   - name: tunimaqam-frontend
+#     buildCommand: npm run build
+#     staticPublishPath: ./dist
+#     headers:
+#       - path: /*
+#         name: Cache-Control
+#         value: public, max-age=31536000
+
+# Cron Jobs (optional, for scheduled tasks)
+# cronJobs:
+#   - name: tunimaqam-cleanup
+#     runtime: python
+#     schedule: "0 0 * * *"  # Daily at midnight
+#     buildCommand: pip install -r requirements.txt
+#     startCommand: python scripts/cleanup.py
+#     envVars:
+#       - key: DATABASE_URL
+#         fromDatabase:
+#           name: tunimaqam-db
+#           property: connectionString

@@ -40,11 +40,16 @@ Thumbs.db
 *.lot
 *.toc
 *.out
+*.nav
+*.snm
 *.fls
 *.fdb_latexmk
 *.synctex.gz
 *.bbl
 *.blg
+*.bcf
+*.run.xml
+*.xdv
 
 # Logs
 logs/
@@ -58,3 +63,5 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+
+DEMO_SCRIPT.md
